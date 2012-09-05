@@ -105,30 +105,30 @@
 ;; Example
 
 (def sources
-  [['repo "/{user.login}/{repo.name}" 
-    [{:name 'repo.name, :bound true}
-     {:name 'repo.full_name}
-     {:name 'user.login, :bound true}]]
-   ['repo "/{repo.full_name}"
-    [{:name 'repo.full_name, :bound true}
-     {:name 'repo.name, :alias :name}
-     {:name 'user.login, :alias #(-> % :owner :login)}]]])
+  [['repo "https://api.github.com/repos/{login}/{name}" 
+    [{:name "name", :bound true}
+     {:name "full_name"}
+     {:name "login", :bound true}]]
+   ['repo "https://api.github.com/repos/{full_name}"
+    [{:name "full_name", :bound true}
+     {:name "name"}
+     {:name "login", :alias #(-> % "owner" "login")}]]])
 
 (def query
-  ['repo ['repo.name 'user.login] ['repo.full_name]])
+  ['repo ["name" "login"] ["full_name"]])
 
 (def query2
-  ['repo ['repo.full_name] ['repo.name 'user.login] ])
+  ['repo ["full_name"] ["name" "login"] ])
 
 (def DB
-  {"/squaremo/bitsyntax-js"
-   [{'repo.name "bitsyntax-js"
-     'user.login "squaremo"
-     'repo.full_name "squaremo/bitsyntax-js"}]
-   "/squaremo/rabbit.js"
-   [{'repo.name "rabbit.js"
-     'user.login "squaremo"
-     'repo.full_name "squaremo/rabbit.js"}]})
+  {"https://api.github.com/repos/squaremo/bitsyntax-js"
+   [{"name" "bitsyntax-js"
+     "login" "squaremo"
+     "full_name" "squaremo/bitsyntax-js"}]
+   "https://api.github.com/repos/squaremo/rabbit.js"
+   [{"name" "rabbit.js"
+     "login" "squaremo"
+     "full_name" "squaremo/rabbit.js"}]})
 
 (defn db-fetch [url]
   (DB url))
@@ -137,4 +137,4 @@
 
 (def ex (prepare-plan pl))
 
-(x db-fetch {'repo.name "bitsyntax-js", 'user.login "squaremo"})
+(x db-fetch {"name" "bitsyntax-js", "login" "squaremo"})
